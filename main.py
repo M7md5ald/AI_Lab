@@ -17,29 +17,40 @@ class board:
                      return i, j  
      def __eq__(self, other):
        return self.array == other.array
+     def string(self):
+         s=""
+         for i in range (3) :
+             for j in range(3):
+                s+=str(self.array[i][j]) 
+         return s
      
 class dfs :
     def __init__(self ):
         self.total_cost=0
         # dictionary for tracking path 
         self.parent_state = {}
-        self.visited= []
-        
+        self.visited= set()
+        #side note that if number of inversions is odd puzzle doesnot have solution
     def dfs (self , current_state):
-        self.visited =[]
+        self.visited =set()
         self.parent_state={}
         stack = [current_state]
-        self.parent_state[current_state ]=None
+        self.parent_state[current_state.string()]=None
+        
         while stack:
             current= stack.pop()
+            
             if(current.is_goal()):
                 print("puzzle solved ")
-                break
-            self.visited.append(current)
-            for neighbor in self.get_valid_moves(current) :
-                if neighbor not in self.visited :
-                    self.visited.append(neighbor)
-                    self.parent_state[neighbor]= current
+                self.print_path(current)
+                return
+            
+            self.visited.add(current.string())
+            neighbors =self.get_valid_moves(current)
+            #adding reversed optimize the path length why?
+            for neighbor in reversed(neighbors) :
+                if neighbor.string() not in self.visited :
+                    self.parent_state[neighbor.string()]= current.string()
                     stack.append(neighbor)
         print("no solution found ")
             
@@ -55,15 +66,32 @@ class dfs :
             new_col = dy[i]+col
             if (new_row < 3 and new_col< 3) and (new_row>= 0 and new_col >= 0): # is it valid move?
                child= copy.deepcopy(current_state)
-               child.array[row][col], child.array[new_row][new_col] = child.array[new_row][new_col], child.array[row][col]
+               child.array[row][col], child.array[new_row][new_col] = \
+                    child.array[new_row][new_col], child.array[row][col]               
                neighbors.append(child) 
-        return neighbors   
+        return neighbors  
+    
+    def print_path(self , goal ) :
+        path=[]
+        goal_state= goal.string()
+        while goal_state is not None :
+            path.append(goal_state)
+            goal_state= self.parent_state[goal_state]
+        path.reverse()
+        print("Path length:", len(path))
+        print("Path:")
+        for state_str in path:
+            # Convert back to 2D array for printing
+             arr = [[int(state_str[i * 3 + j]) for j in range(3)] for i in range(3)]
+             for row in arr:
+               print(row)
+             print("-" * 10)
+        
 
-b1 = board([[1, 2, 3],
-            [4, 5, 6],
-            [7, 0, 8]])
+b1 = board( [[1, 2, 0], [3, 4, 5], [6, 7, 8]]
+)
 
-print(b1.is_goal() )
 
 search = dfs()
 search.dfs(b1)
+
