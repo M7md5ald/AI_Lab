@@ -1,97 +1,96 @@
 from array import *
 import copy
 class board:
-     goal =  [[ 0, 1 , 2 ] , [ 3 , 4 , 5 ] , [6 , 7 , 8]]
-     def __init__(self , array) :
-         self.array = array
-     def is_goal(self ):
-         return self.array == self.goal  
-     #def print_board(self):
-      #
-      # code
-      #       
-     def blank_tile(self) :
-         for i in range(3):
-             for j in range(3) :
-                 if self.array[i][j] == 0 :
-                     return i, j  
+     goal = 12345678 
+     def __init__(self, value):
+        self.value = value
+        
+     def is_goal(self):
+        return self.value == self.goal 
+     
      def __eq__(self, other):
-       return self.array == other.array
-     def string(self):
-         s=""
-         for i in range (3) :
-             for j in range(3):
-                s+=str(self.array[i][j]) 
-         return s
+        return self.value == other.value
+
+     def __hash__(self):
+        return hash(self.value)
      
 class dfs :
-    def __init__(self ):
-        self.total_cost=0
-        # dictionary for tracking path 
-        self.parent_state = {}
-        self.visited= set()
-        #side note that if number of inversions is odd puzzle doesnot have solution
-    def dfs (self , current_state):
-        self.visited =set()
-        self.parent_state={}
-        stack = [current_state]
-        self.parent_state[current_state.string()]=None
-        
-        while stack:
-            current= stack.pop()
-            
-            if(current.is_goal()):
-                print("puzzle solved ")
-                self.print_path(current)
-                return
-            
-            self.visited.add(current.string())
-            neighbors =self.get_valid_moves(current)
-            #adding reversed optimize the path length why?
-            for neighbor in reversed(neighbors) :
-                if neighbor.string() not in self.visited :
-                    self.parent_state[neighbor.string()]= current.string()
-                    stack.append(neighbor)
-        print("no solution found ")
-            
+   def __init__(self):
+        self.visited = set()
+        self.parent = {}
+        self.move_dir = {}
+        self.max_depth =0
+
+   def dfs(self, start):
+    print("start", start.value)
+    stack = [(start.value , 0)]
+    self.visited.clear()
+    self.parent[start.value] = None
+    self.move_dir[start.value] = None
+    self.max_depth =0
     
-    def get_valid_moves (self , current_state ):
-        #current indexs of 0 in board
-        row , col = current_state.blank_tile()
-        neighbors= [] #aka childreen states
-        dx=[0 , 0 , -1 , 1]
-        dy=[1 , -1 , 0 , 0]
-        for i in range(4) :
-            new_row = dx[i]+row
-            new_col = dy[i]+col
-            if (new_row < 3 and new_col< 3) and (new_row>= 0 and new_col >= 0): # is it valid move?
-               child= copy.deepcopy(current_state)
-               child.array[row][col], child.array[new_row][new_col] = \
-                    child.array[new_row][new_col], child.array[row][col]               
-               neighbors.append(child) 
-        return neighbors  
-    
-    def print_path(self , goal ) :
-        path=[]
-        goal_state= goal.string()
-        while goal_state is not None :
-            path.append(goal_state)
-            goal_state= self.parent_state[goal_state]
-        path.reverse()
-        print("Path length:", len(path))
-        print("Path:")
-        for state_str in path:
-            # Convert back to 2D array for printing
-             arr = [[int(state_str[i * 3 + j]) for j in range(3)] for i in range(3)]
-             for row in arr:
-               print(row)
-             print("-" * 10)
+
+    while stack:
+        current , depth= stack.pop()
+        self.max_depth= max(self.max_depth , depth)
+        if current == board.goal:
+            print("Puzzle solved!")
+            print("Search depth:", self.max_depth)
+            self.print_moves(current )
+            return
+
+        self.visited.add(current)
+        for neighbor, move in self.get_childs(board(current)):
+            if neighbor.value not in self.visited:
+                self.parent[neighbor.value] = current
+                self.move_dir[neighbor.value] = move
+                stack.append((neighbor.value , depth+1) )
+    print("No solution found")
+    print("Search depth:", self.max_depth)
+
+
+   def get_childs(self, state):
+       #convert int state to str to get possible moves
+        s = str(state.value)
+        #print("here" , s)
+        #get index of zero
+        i = s.index('0')
+        #print(i)
+        moves = []
+        dirs = [(-3, "Up"), (3, "Down"), (-1, "Left"), (1, "Right")]
+
+        for d, name in dirs:
+            #index of zero + possible move up down left right 
+            #then check if it is possible
+            ni = i + d
+            if 0 <= ni < 9:
+                # prevent moving left from left corner and right from right corner
+                if (d == -1 and i % 3 == 0) or (d == 1 and i % 3 == 2):
+                    continue
+                #strings in py not like cpp it is immutable so i need to convert it to list to swap
+                new_s = list(s)
+                new_s[i], new_s[ni] = new_s[ni], new_s[i]
+                #type casting the list to integer to return it to dfs
+                moves.append((board(int("".join(new_s))), name))
+        return moves
+
+   def print_moves(self, goal_val ):
+        path = []
+        moves = []
+        while goal_val is not None:
+            path.append(goal_val)
+            moves.append(self.move_dir[goal_val])
+            goal_val = self.parent[goal_val]
+        
+        print("number of nodes expanded : " , self.visited.__len__())
+        moves = moves[::-1][1:]# remove None (start)
+        print("cost of path is : ",moves.__len__())
+        print("path to goal : ", " → ".join(moves))
+#class Astar:
+   # def __init__():
         
 
-b1 = board( [[1, 2, 0], [3, 4, 5], [6, 7, 8]]
-)
-
-
+# Example run
+b1 = board(120345678)
 search = dfs()
 search.dfs(b1)
-
