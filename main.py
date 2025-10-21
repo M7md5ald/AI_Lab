@@ -107,6 +107,9 @@ class Astar:
         self.g_cost[start] = 0
         while open_list :
             current_f , current_g , current = heapq.heappop(open_list)
+            # If we already have a better g-cost for this node, skip it (stale heap entry)
+            if current_g > self.g_cost.get(current, float('inf')):
+                continue
             if current == GOAL :
                 print("puzzle solved !")
                 print("Search depth:", self.max_depth)
@@ -126,6 +129,8 @@ class Astar:
                     heapq.heappush(open_list, (new_f, new_g, board))
                     self.parent[board] = current
                     self.moves[board] = move
+                    # record best g-cost found so far for this board
+                    self.g_cost[board] = new_g
           
         print("No Solution found ")
         print("Search depth:", self.max_depth)
