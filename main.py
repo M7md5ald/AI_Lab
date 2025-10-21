@@ -39,7 +39,8 @@ class dfs :
             print("Search depth:", self.max_depth)
             print_moves(current, self.parent, self.move_dir, self.visited)
             return
-
+        if current in self.visited:
+           continue
         self.visited.add(current)
         for neighbor, move in self.get_childs(current):
             if neighbor not in self.visited:
@@ -90,7 +91,9 @@ class Astar:
         self.moves ={}
         self.parent={}
         self.max_depth=0
+        self.g_cost = {}
         
+    
     def a_star(self , start):
         open_list = []  
         g = 0
@@ -101,6 +104,7 @@ class Astar:
         self.parent[start] = None
         self.moves[start ] = None
         self.max_depth =0
+        self.g_cost[start] = 0
         while open_list :
             current_f , current_g , current = heapq.heappop(open_list)
             if current == GOAL :
@@ -108,16 +112,20 @@ class Astar:
                 print("Search depth:", self.max_depth)
                 print_moves(current, self.parent, self.moves, self.visited)
                 return
-                
+            if current in self.visited:
+               continue
             self.visited.add(current)
             #max number of moves from start
             self.max_depth = max(self.max_depth , current_g)
-            for board , new_h , move in self.get_childs(current):
-                if board not in self.visited :
-                  new_f = new_h + current_g +1
-                  heapq.heappush(open_list, (new_f, current_g+1, board) )
-                  self.parent[board] = current
-                  self.moves[board]=move
+            for board, new_h, move in self.get_childs(current):
+                 new_g = current_g + 1
+                 new_f = new_g + new_h
+
+            # only push if not seen OR found a better path
+                 if board not in self.visited and (board not in self.g_cost or new_g < self.g_cost[board]):                      
+                    heapq.heappush(open_list, (new_f, new_g, board))
+                    self.parent[board] = current
+                    self.moves[board] = move
           
         print("No Solution found ")
         print("Search depth:", self.max_depth)
@@ -153,6 +161,7 @@ class Astar:
                 #type casting the list to integer to return it to dfs
                 moves.append((int("".join(new_s)), h, name)) 
         return moves
+    
     def manhattan(self , curr_state):
      #curr now is integer 
       goal ="012345678"
@@ -183,7 +192,7 @@ class Astar:
         
 
 # Example run
-initial =  13425786
+initial =  125340678
   # example start state
  #1 2 0
  #3 4 5 
