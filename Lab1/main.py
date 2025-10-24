@@ -1,3 +1,4 @@
+from Lab1.idfs import IDFS
 from puzzle import Puzzle
 from dfs import DFS
 from bfs import BFS
@@ -14,6 +15,10 @@ def main():
     print("\n--- Breadth-First Search ---")
     bfs_solver = BFS()
     bfs_solver.bfs(puzzle)
+
+    print("\n--- Iterative Search ---")
+    idfs_solver = IDFS()
+    idfs_solver.idfs(puzzle)
 
     print("\n--- A* (Manhattan) ---")
     astar_manhattan = AStar("manhattan")
