@@ -3,7 +3,6 @@ from puzzle import Puzzle
 
 class IDFS(Search):
     def idfs(self, puzzle: Puzzle, max_depth_limit=100):
-        print("Start state:", puzzle.state)
         self.start_timer()
 
         for depth_limit in range(max_depth_limit):
@@ -22,10 +21,6 @@ class IDFS(Search):
 
                 current_puzzle = Puzzle(current)
                 if current_puzzle.is_goal():
-                    print("Puzzle solved!")
-                    print("Search depth:", self.max_depth)
-                    print("Solution found at depth limit:", depth_limit)
-                    self.print_results(current)
                     return
 
                 if current in self.visited:
@@ -43,5 +38,4 @@ class IDFS(Search):
 
             self.stop_timer()
 
-        print("No solution found within depth limit:", max_depth_limit)
-        self.print_results(current)
+

@@ -42,12 +42,3 @@ class Search:
 
         moves = moves[::-1][1:]  # remove the initial None
         return moves, len(moves)
-
-    def print_results(self, goal_state):
-        """Print all five required outputs."""
-        moves, cost = self.trace_path(goal_state)
-        print("Number of nodes expanded:", len(self.visited))
-        print("Cost of path:", cost)
-        print("Path to goal:", " → ".join(moves) if moves else "(empty)")
-        print("Search depth:", self.max_depth)
-        print("Running time:", round(self.running_time(), 6), "seconds")

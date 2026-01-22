@@ -4,7 +4,6 @@ from collections import deque
 
 class DFS(Search):
     def dfs(self, puzzle: Puzzle):
-        print("Start state:", puzzle.state)
         self.start_timer()
 
         stack = [(puzzle.state, 0)]
@@ -20,8 +19,6 @@ class DFS(Search):
             current_puzzle = Puzzle(current)
             if current_puzzle.is_goal():
                 self.stop_timer()
-                print("Puzzle solved!")
-                self.print_results(current)
                 return
 
             if current in self.visited:
@@ -34,5 +31,3 @@ class DFS(Search):
                     stack.append((neighbor, depth + 1))
 
         self.stop_timer()
-        print("No solution found")
-        self.print_results(current)

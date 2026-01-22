@@ -4,7 +4,6 @@ from collections import deque
 
 class BFS(Search):
     def bfs(self, puzzle: Puzzle):
-        print("Start state:", puzzle.state)
         self.start_timer()
 
         queue = deque([(puzzle.state, 0)])
@@ -20,8 +19,6 @@ class BFS(Search):
             current_puzzle = Puzzle(current)
             if current_puzzle.is_goal():
                 self.stop_timer()
-                print("Puzzle solved!")
-                self.print_results(current)
                 return
 
             if current in self.visited:
@@ -34,5 +31,3 @@ class BFS(Search):
                     queue.append((neighbor, depth + 1))
 
         self.stop_timer()
-        print("No solution found")
-        self.print_results(current)

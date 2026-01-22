@@ -10,8 +10,6 @@ class AStar(Search):
         self.heuristic = heuristic.lower()
 
     def a_star(self, puzzle: Puzzle):
-        print(f"Start state: {puzzle.state}")
-        print(f"Using {self.heuristic.title()} heuristic")
         self.start_timer()
 
         open_list = []
@@ -36,8 +34,6 @@ class AStar(Search):
 
             if current_puzzle.is_goal():
                 self.stop_timer()
-                print("Puzzle solved!")
-                self.print_results(current)
                 return
 
             if current in self.visited:
@@ -57,8 +53,6 @@ class AStar(Search):
                     self.g_cost[board] = new_g
 
         self.stop_timer()
-        print("No solution found.")
-        self.print_results(current)
 
     def choose_heuristic(self, state):
         """Select which heuristic to use."""
